@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أسواق الشرق - منصة التداول والتنبيهات الحية</title>
+    <title>أسواق الشرق - التداول والأسعار اللحظية</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
@@ -27,12 +27,9 @@
         header {
             background: rgba(21, 24, 33, 0.95);
             padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 100;
-            backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px);
         }
 
         .logo-area { display: flex; align-items: center; gap: 10px; }
@@ -47,7 +44,6 @@
 
         .container { max-width: 1400px; margin: 15px auto; padding: 0 15px; }
 
-        /* Realtime Ticker Cards */
         .asset-bar {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -55,10 +51,8 @@
         }
 
         .asset-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 12px 15px; border-radius: 10px;
-            cursor: pointer; transition: 0.2s;
+            background: var(--bg-card); border: 1px solid var(--border);
+            padding: 12px 15px; border-radius: 10px; cursor: pointer; transition: 0.2s;
             display: flex; justify-content: space-between; align-items: center;
         }
 
@@ -68,12 +62,9 @@
         .price-up { color: var(--green); }
         .price-down { color: var(--red); }
 
-        /* Alert Control Box */
         .alert-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 15px; margin-bottom: 15px;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 15px; margin-bottom: 15px;
             display: flex; flex-wrap: wrap; gap: 15px; align-items: center;
             justify-content: space-between;
         }
@@ -116,18 +107,18 @@
             <div class="logo-icon"><i class="fa-solid fa-chart-candlestick"></i></div>
             <div class="logo-text">
                 <h1>أسواق الشرق</h1>
-                <span>الأسعار اللحظية ونظام التنبيهات</span>
+                <span>متابعة أسعار الذهب والبيتكوين اللحظية</span>
             </div>
         </div>
     </header>
 
     <div class="container">
         
-        <!-- شريط الأسعار الحية من الـ WebSocket -->
+        <!-- شريط الأسعار الحية -->
         <div class="asset-bar">
-            <div class="asset-card active" onclick="loadChart('CAPITALCOM:GOLD', this)">
+            <div class="asset-card active" onclick="loadChart('OANDA:XAUUSD', this)">
                 <div class="asset-info">
-                    <h3>الذهب (مباشر)</h3>
+                    <h3>الذهب العالمي (XAU/USD)</h3>
                     <div id="gold-price" class="asset-price">جاري التحميل...</div>
                 </div>
                 <i class="fa-solid fa-coins" style="color: #d4af37; font-size: 1.4rem;"></i>
@@ -150,31 +141,31 @@
             </div>
         </div>
 
-        <!-- قسم ضبط التنبيهات الذكي -->
+        <!-- نظام التنبيهات -->
         <div class="alert-box">
             <div style="font-weight: bold; color: var(--accent-gold-light);">
-                <i class="fa-solid fa-bell"></i> إنشاء تنبيه سعر جديد:
+                <i class="fa-solid fa-bell"></i> إنشاء تنبيه سعر:
             </div>
             <div class="alert-inputs">
                 <select id="alert-asset">
                     <option value="BTC">البيتكوين (BTC)</option>
-                    <option value="GOLD">الذهب (PAXG/Gold)</option>
+                    <option value="GOLD">الذهب (XAU/USD)</option>
                 </select>
-                <input type="number" id="alert-target" placeholder="أدخل السعر المستهدف..." />
+                <input type="number" id="alert-target" placeholder="السعر المستهدف..." />
                 <button class="btn-alert" onclick="setPriceAlert()">تفعيل التنبيه</button>
             </div>
             <div id="alert-status" style="font-size: 0.85rem; color: var(--text-muted);">لا توجد تنبيهات نشطة</div>
         </div>
 
-        <!-- الشارت الحي بالشمعات وأدوات التحليل -->
+        <!-- الشارت الحي المعتمد -->
         <div class="chart-box">
             <div id="tv_chart_container" style="height: 100%; width: 100%;"></div>
         </div>
 
-        <!-- الأخبار وتغريدات منصة X -->
+        <!-- الأخبار و تويتر -->
         <div class="grid-two">
             <div class="section-box">
-                <div class="section-header"><i class="fa-solid fa-newspaper" style="color: #4fc3f7;"></i> الأخبار الاقتصادية الحية</div>
+                <div class="section-header"><i class="fa-solid fa-newspaper" style="color: #4fc3f7;"></i> الأخبار الاقتصادية</div>
                 <div class="content-scroll">
                     <div class="tradingview-widget-container">
                         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
@@ -209,7 +200,7 @@
         let alertBtcTarget = null;
         let alertGoldTarget = null;
 
-        // 1. تشغيل الشارت بأعلى دقة
+        // 1. تحميل شارت OANDA العالمي المباشر بدقة متناهية
         function loadChart(symbol, cardEl) {
             if(cardEl) {
                 document.querySelectorAll('.asset-card').forEach(c => c.classList.remove('active'));
@@ -221,18 +212,20 @@
                 "interval": "60",
                 "timezone": "Etc/UTC",
                 "theme": "dark",
-                "style": "1", // شمعات يابانية
+                "style": "1",
                 "locale": "ar_AE",
                 "toolbar_bg": "#151821",
                 "allow_symbol_change": true,
-                "hide_side_toolbar": false, // تفعيل شريط التحليل الفني والرسومات
+                "hide_side_toolbar": false,
                 "container_id": "tv_chart_container",
                 "studies": ["RSI@tv-basicstudies", "MASimple@tv-basicstudies"]
             });
         }
-        loadChart('CAPITALCOM:GOLD', null);
+        
+        // التشغيل الافتراضي لرمز الذهب العالمي الصريح
+        loadChart('OANDA:XAUUSD', null);
 
-        // 2. الربط المباشر مع Binance WebSocket للاسعار اللحظية بالتكة (Tick-by-Tick)
+        // 2. الربط المباشر مع أسعار التداول اللحظية
         const ws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker/paxgusdt@ticker/ethusdt@ticker');
 
         ws.onmessage = (event) => {
@@ -260,7 +253,7 @@
             }
         }
 
-        // 3. نظام التنبيهات وإصدار الصوت عند تحقيق الهدف
+        // 3. نظام التنبيهات الصوتي
         function setPriceAlert() {
             const asset = document.getElementById('alert-asset').value;
             const target = parseFloat(document.getElementById('alert-target').value);
@@ -270,17 +263,17 @@
             if (asset === 'BTC') alertBtcTarget = target;
             if (asset === 'GOLD') alertGoldTarget = target;
 
-            document.getElementById('alert-status').innerText = `تم تفعيل تنبيه لـ ${asset} عند $${target.toLocaleString()}`;
-            alert('تم حفظ التنبيه بنجاح! سيتم إصدار صوت عند وصول السعر للهدف.');
+            document.getElementById('alert-status').innerText = `تنبيه نشط لـ ${asset} عند $${target.toLocaleString()}`;
+            alert('تم حفظ التنبيه!');
         }
 
         function checkAlerts(asset, currentPrice, targetPrice) {
             if (targetPrice && currentPrice >= targetPrice) {
                 playAlertSound();
-                alert(`🚨 تنبيه هام! وصل سعر ${asset} إلى الهدف: $${currentPrice}`);
+                alert(`🚨 تنبيه! وصل سعر ${asset} إلى الهدف: $${currentPrice}`);
                 if (asset === 'BTC') alertBtcTarget = null;
                 if (asset === 'GOLD') alertGoldTarget = null;
-                document.getElementById('alert-status').innerText = 'تم تحقيق التنبيه بنجاح!';
+                document.getElementById('alert-status').innerText = 'تم تحقيق التنبيه!';
             }
         }
 
