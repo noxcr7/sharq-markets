@@ -3,88 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أسواق الشرق - التداول والأسعار اللحظية</title>
+    <title>أسواق الشرق | Sharq Markets</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    
+    <!-- Firebase SDK لتسجيل الدخول -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
     <style>
         :root {
             --bg-main: #0c0d10;
             --bg-card: #151821;
             --bg-card-hover: #1e2230;
             --accent-gold: #d4af37;
-            --accent-gold-light: #f3e5ab;
             --text-main: #f0f2f5;
             --text-muted: #8a91a0;
-            --green: #00c853;
-            --red: #ff3d00;
             --border: #232733;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        [data-theme="light"] {
+            --bg-main: #f4f6f9;
+            --bg-card: #ffffff;
+            --bg-card-hover: #eef2f7;
+            --accent-gold: #b8860b;
+            --text-main: #1a1d20;
+            --text-muted: #5a6270;
+            --border: #dbe0e6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; transition: background 0.3s, color 0.3s; }
         body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 30px; }
 
         header {
-            background: rgba(21, 24, 33, 0.95);
-            padding: 12px 20px;
+            background: var(--bg-card);
+            padding: 12px 24px;
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100;
         }
 
-        .logo-area { display: flex; align-items: center; gap: 10px; }
+        .logo-area { display: flex; align-items: center; gap: 12px; }
         .logo-icon {
-            width: 36px; height: 36px;
+            width: 40px; height: 40px;
             background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
-            border-radius: 8px; display: flex; align-items: center; justify-content: center;
-            color: #000; font-size: 1.1rem;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            color: #000; font-size: 1.2rem;
         }
-        .logo-text h1 { font-size: 1.1rem; color: var(--accent-gold-light); }
+        .logo-text h1 { font-size: 1.2rem; color: var(--accent-gold); }
         .logo-text span { font-size: 0.75rem; color: var(--text-muted); }
+
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-icon {
+            background: var(--bg-card-hover); border: 1px solid var(--border);
+            color: var(--text-main); padding: 8px 14px; border-radius: 8px;
+            cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600;
+        }
+        .btn-icon:hover { border-color: var(--accent-gold); }
+
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
 
         .container { max-width: 1400px; margin: 15px auto; padding: 0 15px; }
 
+        .ticker-wrap {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 10px; overflow: hidden; margin-bottom: 15px;
+        }
+
         .asset-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 12px; margin-bottom: 15px;
         }
 
         .asset-card {
             background: var(--bg-card); border: 1px solid var(--border);
-            padding: 12px 15px; border-radius: 10px; cursor: pointer; transition: 0.2s;
+            padding: 12px 15px; border-radius: 10px; cursor: pointer;
             display: flex; justify-content: space-between; align-items: center;
         }
-
         .asset-card:hover, .asset-card.active { border-color: var(--accent-gold); background: var(--bg-card-hover); }
-        .asset-info h3 { font-size: 0.85rem; color: var(--text-muted); }
-        .asset-price { font-size: 1.1rem; font-weight: bold; margin-top: 4px; }
-        .price-up { color: var(--green); }
-        .price-down { color: var(--red); }
-
-        .alert-box {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 12px; padding: 15px; margin-bottom: 15px;
-            display: flex; flex-wrap: wrap; gap: 15px; align-items: center;
-            justify-content: space-between;
-        }
-        .alert-inputs { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .alert-inputs input, .alert-inputs select {
-            background: var(--bg-main); border: 1px solid var(--border);
-            color: #fff; padding: 8px 12px; border-radius: 6px; outline: none;
-        }
-        .btn-alert {
-            background: var(--accent-gold); color: #000; border: none;
-            padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;
-        }
 
         .chart-box {
             background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 12px; padding: 10px; height: 580px; margin-bottom: 20px;
+            border-radius: 12px; padding: 10px; height: 600px; margin-bottom: 20px;
         }
 
         .grid-two { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        @media (max-width: 900px) { .grid-two { grid-template-columns: 1fr; } .chart-box { height: 450px; } }
+        @media (max-width: 900px) { .grid-two { grid-template-columns: 1fr; } .chart-box { height: 480px; } }
 
         .section-box {
             background: var(--bg-card); border: 1px solid var(--border);
@@ -92,12 +97,41 @@
         }
 
         .section-header {
-            font-size: 1rem; font-weight: bold; color: var(--accent-gold-light);
+            font-size: 1rem; font-weight: bold; color: var(--accent-gold);
             margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
             border-bottom: 1px solid var(--border); padding-bottom: 8px;
         }
 
         .content-scroll { flex: 1; overflow-y: auto; border-radius: 8px; }
+
+        .modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: var(--bg-card); border: 1px solid var(--border);
+            padding: 24px; border-radius: 16px; width: 100%; max-width: 420px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { font-size: 1.2rem; color: var(--accent-gold); }
+        .close-btn { cursor: pointer; font-size: 1.2rem; color: var(--text-muted); }
+
+        .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .setting-row select {
+            background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border);
+            padding: 8px 12px; border-radius: 6px; outline: none;
+        }
+
+        .social-btn {
+            width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-bottom: 10px; font-size: 0.95rem;
+        }
+        .btn-google { background: #ea4335; color: white; }
+        .btn-facebook { background: #1877f2; color: white; }
+        .btn-logout { background: #dc3545; color: white; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -106,66 +140,84 @@
         <div class="logo-area">
             <div class="logo-icon"><i class="fa-solid fa-chart-candlestick"></i></div>
             <div class="logo-text">
-                <h1>أسواق الشرق</h1>
-                <span>متابعة أسعار الذهب والبيتكوين اللحظية</span>
+                <h1 data-i18n="title">أسواق الشرق</h1>
+                <span data-i18n="subtitle">منصة التحليل والأسعار الموحدة</span>
             </div>
+        </div>
+
+        <div class="header-actions">
+            <button class="btn-icon" onclick="openModal('auth-modal')" id="auth-btn">
+                <i class="fa-solid fa-user"></i> <span data-i18n="login">تسجيل الدخول</span>
+            </button>
+            <button class="btn-icon" onclick="openModal('settings-modal')">
+                <i class="fa-solid fa-gear"></i>
+            </button>
         </div>
     </header>
 
     <div class="container">
-        
-        <!-- شريط الأسعار الحية -->
+        <div class="ticker-wrap">
+            <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+                {
+                    "symbols": [
+                        { "proName": "OANDA:XAUUSD", "title": "GOLD" },
+                        { "proName": "BINANCE:BTCUSDT", "title": "BTC/USDT" },
+                        { "proName": "BINANCE:ETHUSDT", "title": "ETH/USDT" },
+                        { "proName": "OANDA:XAGUSD", "title": "SILVER" }
+                    ],
+                    "showSymbolLogo": true,
+                    "colorTheme": "dark",
+                    "isTransparent": true,
+                    "displayMode": "adaptive",
+                    "locale": "ar_AE"
+                }
+                </script>
+            </div>
+        </div>
+
         <div class="asset-bar">
             <div class="asset-card active" onclick="loadChart('OANDA:XAUUSD', this)">
-                <div class="asset-info">
-                    <h3>الذهب العالمي (XAU/USD)</h3>
-                    <div id="gold-price" class="asset-price">جاري التحميل...</div>
+                <div>
+                    <h3 data-i18n="gold">الذهب العالمي</h3>
+                    <span style="font-size:0.75rem; color:var(--text-muted);">OANDA:XAUUSD</span>
                 </div>
                 <i class="fa-solid fa-coins" style="color: #d4af37; font-size: 1.4rem;"></i>
             </div>
-
             <div class="asset-card" onclick="loadChart('BINANCE:BTCUSDT', this)">
-                <div class="asset-info">
-                    <h3>بيتكوين (BTC/USDT)</h3>
-                    <div id="btc-price" class="asset-price">جاري التحميل...</div>
+                <div>
+                    <h3 data-i18n="btc">بيتكوين</h3>
+                    <span style="font-size:0.75rem; color:var(--text-muted);">BINANCE:BTCUSDT</span>
                 </div>
                 <i class="fa-brands fa-bitcoin" style="color: #f7931a; font-size: 1.4rem;"></i>
             </div>
-
             <div class="asset-card" onclick="loadChart('BINANCE:ETHUSDT', this)">
-                <div class="asset-info">
-                    <h3>إيثريوم (ETH/USDT)</h3>
-                    <div id="eth-price" class="asset-price">جاري التحميل...</div>
+                <div>
+                    <h3 data-i18n="eth">إيثريوم</h3>
+                    <span style="font-size:0.75rem; color:var(--text-muted);">BINANCE:ETHUSDT</span>
                 </div>
                 <i class="fa-brands fa-ethereum" style="color: #627eea; font-size: 1.4rem;"></i>
             </div>
+            <div class="asset-card" onclick="loadChart('OANDA:XAGUSD', this)">
+                <div>
+                    <h3 data-i18n="silver">الفضة</h3>
+                    <span style="font-size:0.75rem; color:var(--text-muted);">OANDA:XAGUSD</span>
+                </div>
+                <i class="fa-solid fa-gem" style="color: #c0c0c0; font-size: 1.4rem;"></i>
+            </div>
         </div>
 
-        <!-- نظام التنبيهات -->
-        <div class="alert-box">
-            <div style="font-weight: bold; color: var(--accent-gold-light);">
-                <i class="fa-solid fa-bell"></i> إنشاء تنبيه سعر:
-            </div>
-            <div class="alert-inputs">
-                <select id="alert-asset">
-                    <option value="BTC">البيتكوين (BTC)</option>
-                    <option value="GOLD">الذهب (XAU/USD)</option>
-                </select>
-                <input type="number" id="alert-target" placeholder="السعر المستهدف..." />
-                <button class="btn-alert" onclick="setPriceAlert()">تفعيل التنبيه</button>
-            </div>
-            <div id="alert-status" style="font-size: 0.85rem; color: var(--text-muted);">لا توجد تنبيهات نشطة</div>
-        </div>
-
-        <!-- الشارت الحي المعتمد -->
         <div class="chart-box">
             <div id="tv_chart_container" style="height: 100%; width: 100%;"></div>
         </div>
 
-        <!-- الأخبار و تويتر -->
         <div class="grid-two">
             <div class="section-box">
-                <div class="section-header"><i class="fa-solid fa-newspaper" style="color: #4fc3f7;"></i> الأخبار الاقتصادية</div>
+                <div class="section-header">
+                    <i class="fa-solid fa-newspaper" style="color: #4fc3f7;"></i>
+                    <span data-i18n="news">الأخبار الاقتصادية الحية</span>
+                </div>
                 <div class="content-scroll">
                     <div class="tradingview-widget-container">
                         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
@@ -185,23 +237,134 @@
             </div>
 
             <div class="section-box">
-                <div class="section-header"><i class="fa-brands fa-x-twitter" style="color: #fff;"></i> تغريدات الأسواق (إكس)</div>
+                <div class="section-header">
+                    <i class="fa-brands fa-x-twitter" style="color: var(--text-main);"></i>
+                    <span data-i18n="tweets">تغريدات الأسواق (إكس)</span>
+                </div>
                 <div class="content-scroll">
-                    <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter transparent" href="https://twitter.com/ReutersBiz">جاري تحميل الأخبار...</a>
+                    <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter transparent" href="https://twitter.com/ReutersBiz">Loading...</a>
                 </div>
             </div>
         </div>
+    </div>
 
+    <!-- نافذة الإعدادات -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="settings">الإعدادات</h2>
+                <i class="fa-solid fa-xmark close-btn" onclick="closeModal('settings-modal')"></i>
+            </div>
+            <div class="setting-row">
+                <span data-i18n="language">اللغة</span>
+                <select id="lang-select" onchange="changeLanguage(this.value)">
+                    <option value="ar">العربية (Arabic)</option>
+                    <option value="en">English (الإنجليزية)</option>
+                </select>
+            </div>
+            <div class="setting-row">
+                <span data-i18n="theme">المظهر</span>
+                <select id="theme-select" onchange="changeTheme(this.value)">
+                    <option value="dark" data-i18n="dark">داكن</option>
+                    <option value="light" data-i18n="light">فاتح</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة الحساب -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="account">الحساب</h2>
+                <i class="fa-solid fa-xmark close-btn" onclick="closeModal('auth-modal')"></i>
+            </div>
+            <div id="logged-out-view">
+                <button class="social-btn btn-google" onclick="loginWithGoogle()">
+                    <i class="fa-brands fa-google"></i> <span data-i18n="googleLogin">تسجيل الدخول عبر Google</span>
+                </button>
+                <button class="social-btn btn-facebook" onclick="loginWithFacebook()">
+                    <i class="fa-brands fa-facebook"></i> <span data-i18n="fbLogin">تسجيل الدخول عبر Facebook</span>
+                </button>
+            </div>
+            <div id="logged-in-view" style="display: none; text-align: center;">
+                <img id="user-img" src="" class="user-avatar" style="width: 70px; height: 70px; margin-bottom: 10px;">
+                <h3 id="user-name"></h3>
+                <p id="user-email" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 5px;"></p>
+                <button class="social-btn btn-logout" onclick="logout()" data-i18n="logout">تسجيل الخروج</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        let currentBtcPrice = 0;
-        let currentGoldPrice = 0;
-        let alertBtcTarget = null;
-        let alertGoldTarget = null;
+        const translations = {
+            ar: {
+                title: "أسواق الشرق",
+                subtitle: "منصة التحليل والأسعار الموحدة",
+                login: "تسجيل الدخول",
+                settings: "الإعدادات",
+                account: "الحساب",
+                gold: "الذهب العالمي",
+                btc: "بيتكوين",
+                eth: "إيثريوم",
+                silver: "الفضة",
+                news: "الأخبار الاقتصادية الحية",
+                tweets: "تغريدات الأسواق (إكس)",
+                language: "اللغة",
+                theme: "المظهر",
+                dark: "داكن",
+                light: "فاتح",
+                googleLogin: "تسجيل الدخول عبر Google",
+                fbLogin: "تسجيل الدخول عبر Facebook",
+                logout: "تسجيل الخروج"
+            },
+            en: {
+                title: "Sharq Markets",
+                subtitle: "Unified Analytics & Live Prices",
+                login: "Sign In",
+                settings: "Settings",
+                account: "Account",
+                gold: "Global Gold",
+                btc: "Bitcoin",
+                eth: "Ethereum",
+                silver: "Silver",
+                news: "Live Financial News",
+                tweets: "Market Tweets (X)",
+                language: "Language",
+                theme: "Theme",
+                dark: "Dark",
+                light: "Light",
+                googleLogin: "Sign in with Google",
+                fbLogin: "Sign in with Facebook",
+                logout: "Sign Out"
+            }
+        };
 
-        // 1. تحميل شارت OANDA العالمي المباشر بدقة متناهية
+        let currentLang = 'ar';
+        let currentSymbol = 'OANDA:XAUUSD';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) el.innerText = translations[lang][key];
+            });
+
+            loadChart(currentSymbol, null);
+        }
+
+        function changeTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
         function loadChart(symbol, cardEl) {
+            currentSymbol = symbol;
             if(cardEl) {
                 document.querySelectorAll('.asset-card').forEach(c => c.classList.remove('active'));
                 cardEl.classList.add('active');
@@ -213,78 +376,57 @@
                 "timezone": "Etc/UTC",
                 "theme": "dark",
                 "style": "1",
-                "locale": "ar_AE",
+                "locale": currentLang === 'ar' ? "ar_AE" : "en",
                 "toolbar_bg": "#151821",
                 "allow_symbol_change": true,
-                "hide_side_toolbar": false,
                 "container_id": "tv_chart_container",
                 "studies": ["RSI@tv-basicstudies", "MASimple@tv-basicstudies"]
             });
         }
-        
-        // التشغيل الافتراضي لرمز الذهب العالمي الصريح
+
         loadChart('OANDA:XAUUSD', null);
 
-        // 2. الربط المباشر مع أسعار التداول اللحظية
-        const ws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker/paxgusdt@ticker/ethusdt@ticker');
-
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            const price = parseFloat(data.c).toFixed(2);
-
-            if (data.s === 'BTCUSDT') {
-                updatePriceDisplay('btc-price', price, currentBtcPrice);
-                currentBtcPrice = price;
-                checkAlerts('BTC', currentBtcPrice, alertBtcTarget);
-            } else if (data.s === 'PAXGUSDT') {
-                updatePriceDisplay('gold-price', price, currentGoldPrice);
-                currentGoldPrice = price;
-                checkAlerts('GOLD', currentGoldPrice, alertGoldTarget);
-            } else if (data.s === 'ETHUSDT') {
-                updatePriceDisplay('eth-price', price, 0);
-            }
+        // --- تهيئة Firebase الخاصة بمشروعك noxgk-d2ce5 ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOxPnbyCw0pZibs1GW7wUpI3eI6axjTog",
+            authDomain: "noxgk-d2ce5.firebaseapp.com",
+            projectId: "noxgk-d2ce5",
+            storageBucket: "noxgk-d2ce5.firebasestorage.app",
+            messagingSenderId: "991350939050",
+            appId: "1:991350939050:web:f279b61f730fbc00969fd3",
+            measurementId: "G-X5JZ9RCSVB"
         };
-
-        function updatePriceDisplay(elementId, newPrice, oldPrice) {
-            const el = document.getElementById(elementId);
-            el.innerText = '$' + Number(newPrice).toLocaleString();
-            if (oldPrice > 0) {
-                el.className = newPrice >= oldPrice ? 'asset-price price-up' : 'asset-price price-down';
+        
+        firebase.initializeApp(firebaseConfig);
+        
+        firebase.auth().onAuthStateChanged(user => {
+            const authBtn = document.getElementById('auth-btn');
+            if (user) {
+                authBtn.innerHTML = `<img src="${user.photoURL}" class="user-avatar"> <span>${user.displayName.split(' ')[0]}</span>`;
+                document.getElementById('logged-out-view').style.display = 'none';
+                document.getElementById('logged-in-view').style.display = 'block';
+                document.getElementById('user-img').src = user.photoURL;
+                document.getElementById('user-name').innerText = user.displayName;
+                document.getElementById('user-email').innerText = user.email;
+            } else {
+                authBtn.innerHTML = `<i class="fa-solid fa-user"></i> <span data-i18n="login">${translations[currentLang].login}</span>`;
+                document.getElementById('logged-out-view').style.display = 'block';
+                document.getElementById('logged-in-view').style.display = 'none';
             }
+        });
+
+        function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider).catch(err => alert("خطأ في تسجيل الدخول: " + err.message));
         }
 
-        // 3. نظام التنبيهات الصوتي
-        function setPriceAlert() {
-            const asset = document.getElementById('alert-asset').value;
-            const target = parseFloat(document.getElementById('alert-target').value);
-
-            if (!target) return alert('يرجى كتابة السعر المستهدف أولاً');
-
-            if (asset === 'BTC') alertBtcTarget = target;
-            if (asset === 'GOLD') alertGoldTarget = target;
-
-            document.getElementById('alert-status').innerText = `تنبيه نشط لـ ${asset} عند $${target.toLocaleString()}`;
-            alert('تم حفظ التنبيه!');
+        function loginWithFacebook() {
+            const provider = new firebase.auth.FacebookAuthProvider();
+            firebase.auth().signInWithPopup(provider).catch(err => alert("خطأ في تسجيل الدخول: " + err.message));
         }
 
-        function checkAlerts(asset, currentPrice, targetPrice) {
-            if (targetPrice && currentPrice >= targetPrice) {
-                playAlertSound();
-                alert(`🚨 تنبيه! وصل سعر ${asset} إلى الهدف: $${currentPrice}`);
-                if (asset === 'BTC') alertBtcTarget = null;
-                if (asset === 'GOLD') alertGoldTarget = null;
-                document.getElementById('alert-status').innerText = 'تم تحقيق التنبيه!';
-            }
-        }
-
-        function playAlertSound() {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(880, ctx.currentTime);
-            osc.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + 1);
+        function logout() {
+            firebase.auth().signOut().then(() => closeModal('auth-modal'));
         }
     </script>
 </body>
