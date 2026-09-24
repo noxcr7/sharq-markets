@@ -3,625 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مؤشر أسواق الشرق - Sharq Markets</title>
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogItmF2KTYsSDYo9iz2YjYp9mCINin2YTYtNix2YEiLAogICJzaG9ydF9uYW1lIjogItij2LPZi9in2YEg2KfZhNi02LHYpSIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGQwZDE1IiwKICAidGhlbWVfY29sb3IiOiAiI2Q0YWYzNyIKfQ==">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>أسواق الشرق - منصة التداول والتنبيهات الحية</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         :root {
-            --bg-primary: #0a0b0e;
-            --bg-card: #14171f;
-            --bg-card-hover: #1c202b;
+            --bg-main: #0c0d10;
+            --bg-card: #151821;
+            --bg-card-hover: #1e2230;
             --accent-gold: #d4af37;
             --accent-gold-light: #f3e5ab;
             --text-main: #f0f2f5;
             --text-muted: #8a91a0;
             --green: #00c853;
             --red: #ff3d00;
-            --border-color: #232733;
+            --border: #232733;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-primary);
-            color: var(--text-main);
-            padding-bottom: 70px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 30px; }
 
         header {
-            background: linear-gradient(180deg, rgba(20, 23, 31, 0.95) 0%, rgba(10, 11, 14, 0.95) 100%);
-            padding: 15px 20px;
+            background: rgba(21, 24, 33, 0.95);
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 100;
             backdrop-filter: blur(10px);
         }
 
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
+        .logo-area { display: flex; align-items: center; gap: 10px; }
         .logo-icon {
-            width: 38px;
-            height: 38px;
+            width: 36px; height: 36px;
             background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #000;
-            font-size: 1.2rem;
-            box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            color: #000; font-size: 1.1rem;
         }
+        .logo-text h1 { font-size: 1.1rem; color: var(--accent-gold-light); }
+        .logo-text span { font-size: 0.75rem; color: var(--text-muted); }
 
-        .logo-text h1 {
-            font-size: 1.1rem;
-            color: var(--accent-gold-light);
-            font-weight: 700;
-        }
+        .container { max-width: 1400px; margin: 15px auto; padding: 0 15px; }
 
-        .logo-text span {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-        }
-
-        .live-badge {
-            background: rgba(0, 200, 83, 0.15);
-            color: var(--green);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            border: 1px solid rgba(0, 200, 83, 0.3);
-        }
-
-        .live-dot {
-            width: 7px;
-            height: 7px;
-            background-color: var(--green);
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(1.2); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        .container {
-            padding: 15px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .market-cards {
+        /* Realtime Ticker Cards */
+        .asset-bar {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px; margin-bottom: 15px;
         }
 
-        .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        .asset-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 12px 15px; border-radius: 10px;
+            cursor: pointer; transition: 0.2s;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        .card:hover, .card.active {
-            border-color: var(--accent-gold);
-            background-color: var(--bg-card-hover);
-        }
+        .asset-card:hover, .asset-card.active { border-color: var(--accent-gold); background: var(--bg-card-hover); }
+        .asset-info h3 { font-size: 0.85rem; color: var(--text-muted); }
+        .asset-price { font-size: 1.1rem; font-weight: bold; margin-top: 4px; }
+        .price-up { color: var(--green); }
+        .price-down { color: var(--red); }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .card-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        .card-price {
-            font-size: 1.25rem;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-
-        .card-change {
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .up { color: var(--green); }
-        .down { color: var(--red); }
-
-        .chart-section {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .chart-title-area h2 {
-            font-size: 1.1rem;
-            color: var(--text-main);
-        }
-
-        .timeframes {
-            display: flex;
-            gap: 6px;
-        }
-
-        .tf-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: none;
-            color: var(--text-muted);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            cursor: pointer;
-        }
-
-        .tf-btn.active {
-            background: var(--accent-gold);
-            color: #000;
-            font-weight: 700;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 260px;
-            width: 100%;
-        }
-
-        .nav-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: rgba(20, 23, 31, 0.98);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.75rem;
-            cursor: pointer;
-        }
-
-        .nav-item i {
-            font-size: 1.2rem;
-        }
-
-        .nav-item.active {
-            color: var(--accent-gold);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .news-item {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 12px;
-        }
-
-        .news-tag {
-            font-size: 0.7rem;
-            color: var(--accent-gold);
-            text-transform: uppercase;
-            font-weight: 700;
-            margin-bottom: 6px;
-            display: inline-block;
-        }
-
-        .news-title {
-            font-size: 0.95rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-            line-height: 1.4;
-        }
-
-        .news-time {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
+        /* Alert Control Box */
         .alert-box {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px; margin-bottom: 15px;
+            display: flex; flex-wrap: wrap; gap: 15px; align-items: center;
+            justify-content: space-between;
+        }
+        .alert-inputs { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .alert-inputs input, .alert-inputs select {
+            background: var(--bg-main); border: 1px solid var(--border);
+            color: #fff; padding: 8px 12px; border-radius: 6px; outline: none;
+        }
+        .btn-alert {
+            background: var(--accent-gold); color: #000; border: none;
+            padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;
         }
 
-        .form-group {
-            margin-bottom: 12px;
+        .chart-box {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 10px; height: 580px; margin-bottom: 20px;
         }
 
-        .form-group label {
-            display: block;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 6px;
+        .grid-two { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 900px) { .grid-two { grid-template-columns: 1fr; } .chart-box { height: 450px; } }
+
+        .section-box {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 15px; height: 500px; display: flex; flex-direction: column;
         }
 
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-main);
-            outline: none;
+        .section-header {
+            font-size: 1rem; font-weight: bold; color: var(--accent-gold-light);
+            margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+            border-bottom: 1px solid var(--border); padding-bottom: 8px;
         }
 
-        .btn-gold {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
-            border: none;
-            border-radius: 8px;
-            color: #000;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-
-        .btn-outline {
-            width: 100%;
-            padding: 10px;
-            background: transparent;
-            border: 1px solid var(--accent-gold);
-            border-radius: 8px;
-            color: var(--accent-gold);
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 15px;
-        }
-
-        @media (max-width: 480px) {
-            .market-cards { grid-template-columns: 1fr; }
-        }
+        .content-scroll { flex: 1; overflow-y: auto; border-radius: 8px; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo-area">
-            <div class="logo-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="logo-icon"><i class="fa-solid fa-chart-candlestick"></i></div>
             <div class="logo-text">
                 <h1>أسواق الشرق</h1>
-                <span>تداول وأخبار حية</span>
+                <span>الأسعار اللحظية ونظام التنبيهات</span>
             </div>
-        </div>
-        <div class="live-badge">
-            <div class="live-dot"></div> أسعار مباشرة
         </div>
     </header>
 
     <div class="container">
         
-        <div id="markets-tab" class="tab-content active">
-            <div class="market-cards">
-                <div class="card active" onclick="selectAsset('GOLD')">
-                    <div class="card-header">
-                        <span class="card-title">الذهب (أونصة)</span>
-                        <i class="fa-solid fa-coins" style="color: var(--accent-gold)"></i>
-                    </div>
-                    <div class="card-price" id="price-GOLD">...</div>
-                    <div class="card-change" id="change-GOLD">...</div>
+        <!-- شريط الأسعار الحية من الـ WebSocket -->
+        <div class="asset-bar">
+            <div class="asset-card active" onclick="loadChart('CAPITALCOM:GOLD', this)">
+                <div class="asset-info">
+                    <h3>الذهب (مباشر)</h3>
+                    <div id="gold-price" class="asset-price">جاري التحميل...</div>
                 </div>
-
-                <div class="card" onclick="selectAsset('BTC')">
-                    <div class="card-header">
-                        <span class="card-title">بيتكوين</span>
-                        <i class="fa-brands fa-bitcoin" style="color: #f7931a"></i>
-                    </div>
-                    <div class="card-price" id="price-BTC">...</div>
-                    <div class="card-change" id="change-BTC">...</div>
-                </div>
-
-                <div class="card" onclick="selectAsset('ETH')">
-                    <div class="card-header">
-                        <span class="card-title">إيثريوم</span>
-                        <i class="fa-brands fa-ethereum" style="color: #627eea"></i>
-                    </div>
-                    <div class="card-price" id="price-ETH">...</div>
-                    <div class="card-change" id="change-ETH">...</div>
-                </div>
-
-                <div class="card" onclick="selectAsset('SILVER')">
-                    <div class="card-header">
-                        <span class="card-title">الفضة</span>
-                        <i class="fa-solid fa-ring" style="color: #c0c0c0"></i>
-                    </div>
-                    <div class="card-price" id="price-SILVER">...</div>
-                    <div class="card-change" id="change-SILVER">...</div>
-                </div>
+                <i class="fa-solid fa-coins" style="color: #d4af37; font-size: 1.4rem;"></i>
             </div>
 
-            <div class="chart-section">
-                <div class="chart-header">
-                    <div class="chart-title-area">
-                        <h2 id="chart-asset-name">الذهب - XAU/USD</h2>
-                    </div>
-                    <div class="timeframes">
-                        <button class="tf-btn active">1D</button>
-                        <button class="tf-btn">1W</button>
-                        <button class="tf-btn">1M</button>
-                    </div>
+            <div class="asset-card" onclick="loadChart('BINANCE:BTCUSDT', this)">
+                <div class="asset-info">
+                    <h3>بيتكوين (BTC/USDT)</h3>
+                    <div id="btc-price" class="asset-price">جاري التحميل...</div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="marketChart"></canvas>
+                <i class="fa-brands fa-bitcoin" style="color: #f7931a; font-size: 1.4rem;"></i>
+            </div>
+
+            <div class="asset-card" onclick="loadChart('BINANCE:ETHUSDT', this)">
+                <div class="asset-info">
+                    <h3>إيثريوم (ETH/USDT)</h3>
+                    <div id="eth-price" class="asset-price">جاري التحميل...</div>
                 </div>
+                <i class="fa-brands fa-ethereum" style="color: #627eea; font-size: 1.4rem;"></i>
             </div>
         </div>
 
-        <div id="news-tab" class="tab-content">
-            <h2 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--accent-gold-light)">عاجل الأخبار الاقتصادية</h2>
-            <div id="news-container">
-                <div class="news-item">
-                    <span class="news-tag">الذهب والمعادن</span>
-                    <div class="news-title">استقرار أسعار الذهب بالقرب من مستوياتها القياسية وسط ترقب لقرارات الفيدرالي.</div>
-                    <div class="news-time">قبل 10 دقائق</div>
-                </div>
-                <div class="news-item">
-                    <span class="news-tag">الكريبتو</span>
-                    <div class="news-title">البيتكوين يتجاوز حاجز 84,000 دولار مدعوماً بتدفقات صناديق الـ ETF.</div>
-                    <div class="news-time">قبل 25 دقيقة</div>
-                </div>
+        <!-- قسم ضبط التنبيهات الذكي -->
+        <div class="alert-box">
+            <div style="font-weight: bold; color: var(--accent-gold-light);">
+                <i class="fa-solid fa-bell"></i> إنشاء تنبيه سعر جديد:
             </div>
+            <div class="alert-inputs">
+                <select id="alert-asset">
+                    <option value="BTC">البيتكوين (BTC)</option>
+                    <option value="GOLD">الذهب (PAXG/Gold)</option>
+                </select>
+                <input type="number" id="alert-target" placeholder="أدخل السعر المستهدف..." />
+                <button class="btn-alert" onclick="setPriceAlert()">تفعيل التنبيه</button>
+            </div>
+            <div id="alert-status" style="font-size: 0.85rem; color: var(--text-muted);">لا توجد تنبيهات نشطة</div>
         </div>
 
-        <div id="alerts-tab" class="tab-content">
-            <div class="alert-box">
-                <h2 style="margin-bottom: 12px; font-size: 1rem; color: var(--accent-gold-light)">إعدادات التنبيهات</h2>
-                <button class="btn-outline" onclick="requestNotificationPermission()">
-                    <i class="fa-solid fa-bell"></i> تفعيل إشعارات الهاتف / المتصفح
-                </button>
+        <!-- الشارت الحي بالشمعات وأدوات التحليل -->
+        <div class="chart-box">
+            <div id="tv_chart_container" style="height: 100%; width: 100%;"></div>
+        </div>
 
-                <div class="form-group">
-                    <label>اختر الأصل</label>
-                    <select class="form-control" id="alert-asset">
-                        <option value="GOLD">الذهب (XAU/USD)</option>
-                        <option value="BTC">بيتكوين (BTC)</option>
-                    </select>
+        <!-- الأخبار وتغريدات منصة X -->
+        <div class="grid-two">
+            <div class="section-box">
+                <div class="section-header"><i class="fa-solid fa-newspaper" style="color: #4fc3f7;"></i> الأخبار الاقتصادية الحية</div>
+                <div class="content-scroll">
+                    <div class="tradingview-widget-container">
+                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+                        {
+                            "feedMode": "market",
+                            "market": "crypto",
+                            "colorTheme": "dark",
+                            "isTransparent": true,
+                            "displayMode": "regular",
+                            "width": "100%",
+                            "height": "100%",
+                            "locale": "ar_AE"
+                        }
+                        </script>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>السعر المستهدف ($)</label>
-                    <input type="number" class="form-control" id="alert-price" placeholder="مثال: 4300">
+            </div>
+
+            <div class="section-box">
+                <div class="section-header"><i class="fa-brands fa-x-twitter" style="color: #fff;"></i> تغريدات الأسواق (إكس)</div>
+                <div class="content-scroll">
+                    <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter transparent" href="https://twitter.com/ReutersBiz">جاري تحميل الأخبار...</a>
                 </div>
-                <button class="btn-gold" onclick="addAlert()">تفعيل التنبيه إرسال إشعار تجريبي</button>
             </div>
         </div>
 
     </div>
 
-    <nav class="nav-bar">
-        <a class="nav-item active" onclick="switchTab('markets', this)">
-            <i class="fa-solid fa-chart-line"></i>
-            <span>الأسواق</span>
-        </a>
-        <a class="nav-item" onclick="switchTab('news', this)">
-            <i class="fa-solid fa-newspaper"></i>
-            <span>الأخبار</span>
-        </a>
-        <a class="nav-item" onclick="switchTab('alerts', this)">
-            <i class="fa-solid fa-bell"></i>
-            <span>التنبيهات</span>
-        </a>
-    </nav>
-
     <script>
-        const API_CRYPTO = 'https://api.binance.com/api/v3/ticker/24hr';
-        let activeAsset = 'GOLD';
-        let chartInstance = null;
+        let currentBtcPrice = 0;
+        let currentGoldPrice = 0;
+        let alertBtcTarget = null;
+        let alertGoldTarget = null;
 
-        let marketData = {
-            GOLD: { price: 4262.39, change: -0.57, history: [4280, 4275, 4250, 4260, 4255, 4262.39] },
-            BTC: { price: 84196.00, change: -0.22, history: [84500, 84200, 83100, 84000, 84300, 84196] },
-            ETH: { price: 3120.50, change: 1.15, history: [3050, 3080, 3100, 3090, 3120.50] },
-            SILVER: { price: 34.20, change: 0.45, history: [33.8, 33.9, 34.1, 34.0, 34.20] }
-        };
-
-        // Notification Permission System
-        function requestNotificationPermission() {
-            if ("Notification" in window) {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        alert("تم منح صلاحية الإشعارات بنجاح!");
-                        sendNotification("أسواق الشرق", "تم تفعيل نظام الإشعارات المباشرة لأسعار الذهب والبيتكوين.");
-                    } else {
-                        alert("يرجى السماح بالإشعارات من إعدادات المتصفح/الهاتف للتوصل بآخر التحديثات.");
-                    }
-                });
-            } else {
-                alert("المتصفح لا يدعم إشعارات النظام.");
+        // 1. تشغيل الشارت بأعلى دقة
+        function loadChart(symbol, cardEl) {
+            if(cardEl) {
+                document.querySelectorAll('.asset-card').forEach(c => c.classList.remove('active'));
+                cardEl.classList.add('active');
             }
-        }
-
-        function sendNotification(title, body) {
-            if ("Notification" in window && Notification.permission === "granted") {
-                new Notification(title, {
-                    body: body,
-                    icon: "https://cdn-icons-png.flaticon.com/512/25/25231.png"
-                });
-            }
-        }
-
-        async function fetchLivePrices() {
-            try {
-                const response = await fetch(API_CRYPTO);
-                const data = await response.json();
-
-                const btcData = data.find(item => item.symbol === 'BTCUSDT');
-                const ethData = data.find(item => item.symbol === 'ETHUSDT');
-
-                if (btcData) {
-                    marketData.BTC.price = parseFloat(btcData.lastPrice);
-                    marketData.BTC.change = parseFloat(btcData.priceChangePercent);
-                    marketData.BTC.history.push(marketData.BTC.price);
-                    marketData.BTC.history.shift();
-                }
-
-                if (ethData) {
-                    marketData.ETH.price = parseFloat(ethData.lastPrice);
-                    marketData.ETH.change = parseFloat(ethData.priceChangePercent);
-                    marketData.ETH.history.push(marketData.ETH.price);
-                    marketData.ETH.history.shift();
-                }
-
-            } catch (err) {
-                console.log('Live fetch fallback active');
-            }
-
-            updateUI();
-        }
-
-        function updateUI() {
-            for (let key in marketData) {
-                const asset = marketData[key];
-                const priceEl = document.getElementById(`price-${key}`);
-                const changeEl = document.getElementById(`change-${key}`);
-
-                if (priceEl && changeEl) {
-                    priceEl.innerText = `$${asset.price.toLocaleString()}`;
-                    const isUp = asset.change >= 0;
-                    changeEl.className = `card-change ${isUp ? 'up' : 'down'}`;
-                    changeEl.innerHTML = `<i class="fa-solid fa-caret-${isUp ? 'up' : 'down'}"></i> ${Math.abs(asset.change)}%`;
-                }
-            }
-
-            if (chartInstance) {
-                chartInstance.data.datasets[0].data = marketData[activeAsset].history;
-                chartInstance.update();
-            }
-        }
-
-        function selectAsset(assetKey) {
-            activeAsset = assetKey;
-            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            
-            const names = { GOLD: 'الذهب - XAU/USD', BTC: 'بيتكوين - BTC/USD', ETH: 'إيثريوم - ETH/USD', SILVER: 'الفضة - XAG/USD' };
-            document.getElementById('chart-asset-name').innerText = names[assetKey];
-
-            initChart();
-        }
-
-        function initChart() {
-            const ctx = document.getElementById('marketChart').getContext('2d');
-            if (chartInstance) chartInstance.destroy();
-
-            const isUp = marketData[activeAsset].change >= 0;
-            const lineColor = isUp ? '#00c853' : '#ff3d00';
-
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['03:15 ص', '07:00 ص', '11:00 ص', '02:45 م', '06:00 م', 'الآن'],
-                    datasets: [{
-                        data: marketData[activeAsset].history,
-                        borderColor: lineColor,
-                        borderWidth: 2,
-                        fill: false,
-                        tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8a91a0' } },
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8a91a0' } }
-                    }
-                }
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": symbol,
+                "interval": "60",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1", // شمعات يابانية
+                "locale": "ar_AE",
+                "toolbar_bg": "#151821",
+                "allow_symbol_change": true,
+                "hide_side_toolbar": false, // تفعيل شريط التحليل الفني والرسومات
+                "container_id": "tv_chart_container",
+                "studies": ["RSI@tv-basicstudies", "MASimple@tv-basicstudies"]
             });
         }
+        loadChart('CAPITALCOM:GOLD', null);
 
-        function switchTab(tabId, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
-            document.getElementById(`${tabId}-tab`).classList.add('active');
-            el.classList.add('active');
-        }
+        // 2. الربط المباشر مع Binance WebSocket للاسعار اللحظية بالتكة (Tick-by-Tick)
+        const ws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker/paxgusdt@ticker/ethusdt@ticker');
 
-        function addAlert() {
-            const asset = document.getElementById('alert-asset').value;
-            const price = document.getElementById('alert-price').value || "السعر المحدد";
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            const price = parseFloat(data.c).toFixed(2);
 
-            if ("Notification" in window && Notification.permission !== "granted") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        sendNotification("تنبيه سعر جديد", `تم تفعيل التنبيه بنجاح لـ ${asset} عند السعر $${price}`);
-                    }
-                });
-            } else {
-                sendNotification("تنبيه سعر جديد", `تم تفعيل التنبيه بنجاح لـ ${asset} عند السعر $${price}`);
+            if (data.s === 'BTCUSDT') {
+                updatePriceDisplay('btc-price', price, currentBtcPrice);
+                currentBtcPrice = price;
+                checkAlerts('BTC', currentBtcPrice, alertBtcTarget);
+            } else if (data.s === 'PAXGUSDT') {
+                updatePriceDisplay('gold-price', price, currentGoldPrice);
+                currentGoldPrice = price;
+                checkAlerts('GOLD', currentGoldPrice, alertGoldTarget);
+            } else if (data.s === 'ETHUSDT') {
+                updatePriceDisplay('eth-price', price, 0);
             }
+        };
 
-            alert('تم تفعيل التنبيه! ستصلك إشعارات فورية عند وصول الأسعار للهدف المحدد.');
+        function updatePriceDisplay(elementId, newPrice, oldPrice) {
+            const el = document.getElementById(elementId);
+            el.innerText = '$' + Number(newPrice).toLocaleString();
+            if (oldPrice > 0) {
+                el.className = newPrice >= oldPrice ? 'asset-price price-up' : 'asset-price price-down';
+            }
         }
 
-        fetchLivePrices();
-        setInterval(fetchLivePrices, 5000);
-        initChart();
+        // 3. نظام التنبيهات وإصدار الصوت عند تحقيق الهدف
+        function setPriceAlert() {
+            const asset = document.getElementById('alert-asset').value;
+            const target = parseFloat(document.getElementById('alert-target').value);
+
+            if (!target) return alert('يرجى كتابة السعر المستهدف أولاً');
+
+            if (asset === 'BTC') alertBtcTarget = target;
+            if (asset === 'GOLD') alertGoldTarget = target;
+
+            document.getElementById('alert-status').innerText = `تم تفعيل تنبيه لـ ${asset} عند $${target.toLocaleString()}`;
+            alert('تم حفظ التنبيه بنجاح! سيتم إصدار صوت عند وصول السعر للهدف.');
+        }
+
+        function checkAlerts(asset, currentPrice, targetPrice) {
+            if (targetPrice && currentPrice >= targetPrice) {
+                playAlertSound();
+                alert(`🚨 تنبيه هام! وصل سعر ${asset} إلى الهدف: $${currentPrice}`);
+                if (asset === 'BTC') alertBtcTarget = null;
+                if (asset === 'GOLD') alertGoldTarget = null;
+                document.getElementById('alert-status').innerText = 'تم تحقيق التنبيه بنجاح!';
+            }
+        }
+
+        function playAlertSound() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime);
+            osc.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 1);
+        }
     </script>
 </body>
 </html>
