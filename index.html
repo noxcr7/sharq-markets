@@ -85,11 +85,11 @@
 
         .chart-box {
             background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 12px; padding: 10px; height: 600px; margin-bottom: 20px;
+            border-radius: 12px; padding: 10px; height: 580px; margin-bottom: 20px;
         }
 
-        .grid-two { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        @media (max-width: 900px) { .grid-two { grid-template-columns: 1fr; } .chart-box { height: 480px; } }
+        .grid-two { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        @media (max-width: 900px) { .grid-two { grid-template-columns: 1fr; } .chart-box { height: 450px; } }
 
         .section-box {
             background: var(--bg-card); border: 1px solid var(--border);
@@ -103,6 +103,30 @@
         }
 
         .content-scroll { flex: 1; overflow-y: auto; border-radius: 8px; }
+
+        /* حاسبة إدارة المخاطر */
+        .calculator-box {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px; margin-bottom: 20px;
+        }
+        .calc-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;
+            margin-top: 15px;
+        }
+        .calc-field label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; }
+        .calc-field input {
+            width: 100%; padding: 10px; background: var(--bg-main); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text-main); font-size: 1rem; outline: none;
+        }
+        .calc-field input:focus { border-color: var(--accent-gold); }
+        .calc-result {
+            margin-top: 15px; padding: 15px; background: var(--bg-card-hover);
+            border-radius: 10px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px;
+            border: 1px dashed var(--accent-gold);
+        }
+        .res-item { text-align: center; }
+        .res-item span { display: block; font-size: 0.8rem; color: var(--text-muted); }
+        .res-item strong { font-size: 1.2rem; color: var(--accent-gold); }
 
         .modal {
             display: none; position: fixed; inset: 0;
@@ -156,6 +180,7 @@
     </header>
 
     <div class="container">
+        <!-- شريط الأسعار الحية -->
         <div class="ticker-wrap">
             <div class="tradingview-widget-container">
                 <div class="tradingview-widget-container__widget"></div>
@@ -177,6 +202,7 @@
             </div>
         </div>
 
+        <!-- أزرار الأصول -->
         <div class="asset-bar">
             <div class="asset-card active" onclick="loadChart('OANDA:XAUUSD', this)">
                 <div>
@@ -208,11 +234,14 @@
             </div>
         </div>
 
+        <!-- الرسم البياني الرئيسي -->
         <div class="chart-box">
             <div id="tv_chart_container" style="height: 100%; width: 100%;"></div>
         </div>
 
+        <!-- قسم الأخبار والمفكرة الاقتصادية -->
         <div class="grid-two">
+            <!-- الأخبار الحية -->
             <div class="section-box">
                 <div class="section-header">
                     <i class="fa-solid fa-newspaper" style="color: #4fc3f7;"></i>
@@ -236,13 +265,57 @@
                 </div>
             </div>
 
+            <!-- المفكرة الاقتصادية -->
             <div class="section-box">
                 <div class="section-header">
-                    <i class="fa-brands fa-x-twitter" style="color: var(--text-main);"></i>
-                    <span data-i18n="tweets">تغريدات الأسواق (إكس)</span>
+                    <i class="fa-solid fa-calendar-days" style="color: #ffb74d;"></i>
+                    <span data-i18n="calendar">المفكرة الاقتصادية (مواعيد الأخبار)</span>
                 </div>
                 <div class="content-scroll">
-                    <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter transparent" href="https://twitter.com/ReutersBiz">Loading...</a>
+                    <div class="tradingview-widget-container">
+                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+                        {
+                            "colorTheme": "dark",
+                            "isTransparent": true,
+                            "width": "100%",
+                            "height": "100%",
+                            "locale": "ar_AE",
+                            "importanceFilter": "0,1"
+                        }
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- حاسبة إدارة المخاطر والتداول -->
+        <div class="calculator-box">
+            <div class="section-header">
+                <i class="fa-solid fa-calculator" style="color: var(--accent-gold);"></i>
+                <span data-i18n="calcTitle">حاسبة إدارة المخاطر وحجم اللوت (Lot Calculator)</span>
+            </div>
+            <div class="calc-grid">
+                <div class="calc-field">
+                    <label data-i18n="calcBalance">رأس المال ($)</label>
+                    <input type="number" id="calc-balance" value="1000" oninput="calculateRisk()">
+                </div>
+                <div class="calc-field">
+                    <label data-i18n="calcRisk">نسبة المخاطرة المرغوبة (%)</label>
+                    <input type="number" id="calc-risk" value="2" oninput="calculateRisk()">
+                </div>
+                <div class="calc-field">
+                    <label data-i18n="calcSL">وقف الخسارة بالنقاط (Pips)</label>
+                    <input type="number" id="calc-sl" value="30" oninput="calculateRisk()">
+                </div>
+            </div>
+            <div class="calc-result">
+                <div class="res-item">
+                    <span data-i18n="riskAmount">المبلغ الخاضع للمخاطرة</span>
+                    <strong id="res-risk-amount">$20.00</strong>
+                </div>
+                <div class="res-item">
+                    <span data-i18n="suggestedLot">حجم اللوت المقترح (Lot Size)</span>
+                    <strong id="res-lot-size">0.07 Lot</strong>
                 </div>
             </div>
         </div>
@@ -309,7 +382,13 @@
                 eth: "إيثريوم",
                 silver: "الفضة",
                 news: "الأخبار الاقتصادية الحية",
-                tweets: "تغريدات الأسواق (إكس)",
+                calendar: "المفكرة الاقتصادية (مواعيد الأخبار)",
+                calcTitle: "حاسبة إدارة المخاطر وحجم اللوت (Lot Calculator)",
+                calcBalance: "رأس المال ($)",
+                calcRisk: "نسبة المخاطرة المرغوبة (%)",
+                calcSL: "وقف الخسارة بالنقاط (Pips)",
+                riskAmount: "المبلغ الخاضع للمخاطرة",
+                suggestedLot: "حجم اللوت المقترح (Lot Size)",
                 language: "اللغة",
                 theme: "المظهر",
                 dark: "داكن",
@@ -329,7 +408,13 @@
                 eth: "Ethereum",
                 silver: "Silver",
                 news: "Live Financial News",
-                tweets: "Market Tweets (X)",
+                calendar: "Economic Calendar",
+                calcTitle: "Risk Management & Lot Calculator",
+                calcBalance: "Account Balance ($)",
+                calcRisk: "Risk Percentage (%)",
+                calcSL: "Stop Loss (Pips)",
+                riskAmount: "Amount at Risk",
+                suggestedLot: "Suggested Lot Size",
                 language: "Language",
                 theme: "Theme",
                 dark: "Dark",
@@ -384,9 +469,22 @@
             });
         }
 
-        loadChart('OANDA:XAUUSD', null);
+        function calculateRisk() {
+            const balance = parseFloat(document.getElementById('calc-balance').value) || 0;
+            const riskPercent = parseFloat(document.getElementById('calc-risk').value) || 0;
+            const pips = parseFloat(document.getElementById('calc-sl').value) || 1;
 
-        // --- تهيئة Firebase الخاصة بمشروعك noxgk-d2ce5 ---
+            const riskAmount = balance * (riskPercent / 100);
+            const lotSize = (riskAmount / (pips * 10)).toFixed(2);
+
+            document.getElementById('res-risk-amount').innerText = `$${riskAmount.toFixed(2)}`;
+            document.getElementById('res-lot-size').innerText = `${lotSize > 0 ? lotSize : 0.01} Lot`;
+        }
+
+        loadChart('OANDA:XAUUSD', null);
+        calculateRisk();
+
+        // --- تهيئة Firebase الخاصة بالمشروع ---
         const firebaseConfig = {
             apiKey: "AIzaSyCOxPnbyCw0pZibs1GW7wUpI3eI6axjTog",
             authDomain: "noxgk-d2ce5.firebaseapp.com",
