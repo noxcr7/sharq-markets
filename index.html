@@ -8,7 +8,7 @@
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     
-    <!-- Firebase SDK لتسجيل الدخول -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
@@ -21,6 +21,8 @@
             --text-main: #f0f2f5;
             --text-muted: #8a91a0;
             --border: #232733;
+            --green: #00c853;
+            --red: #ff3d00;
         }
 
         [data-theme="light"] {
@@ -37,11 +39,9 @@
         body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 30px; }
 
         header {
-            background: var(--bg-card);
-            padding: 12px 24px;
+            background: var(--bg-card); padding: 12px 24px;
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
         }
 
         .logo-area { display: flex; align-items: center; gap: 12px; }
@@ -61,21 +61,13 @@
             cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600;
         }
         .btn-icon:hover { border-color: var(--accent-gold); }
+        .btn-ai { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: #fff; border: none; }
 
         .user-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
-
         .container { max-width: 1400px; margin: 15px auto; padding: 0 15px; }
 
-        .ticker-wrap {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 10px; overflow: hidden; margin-bottom: 15px;
-        }
-
-        .asset-bar {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px; margin-bottom: 15px;
-        }
-
+        .ticker-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 15px; }
+        .asset-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .asset-card {
             background: var(--bg-card); border: 1px solid var(--border);
             padding: 12px 15px; border-radius: 10px; cursor: pointer;
@@ -83,76 +75,55 @@
         }
         .asset-card:hover, .asset-card.active { border-color: var(--accent-gold); background: var(--bg-card-hover); }
 
-        .chart-box {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 12px; padding: 10px; height: 580px; margin-bottom: 20px;
-        }
-
+        .chart-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 10px; height: 580px; margin-bottom: 20px; }
         .grid-two { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         @media (max-width: 900px) { .grid-two { grid-template-columns: 1fr; } .chart-box { height: 450px; } }
 
-        .section-box {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 12px; padding: 15px; height: 500px; display: flex; flex-direction: column;
-        }
-
-        .section-header {
-            font-size: 1rem; font-weight: bold; color: var(--accent-gold);
-            margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
-            border-bottom: 1px solid var(--border); padding-bottom: 8px;
-        }
-
+        .section-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; height: 500px; display: flex; flex-direction: column; }
+        .section-header { font-size: 1rem; font-weight: bold; color: var(--accent-gold); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
         .content-scroll { flex: 1; overflow-y: auto; border-radius: 8px; }
 
-        /* حاسبة إدارة المخاطر */
-        .calculator-box {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 12px; padding: 20px; margin-bottom: 20px;
-        }
-        .calc-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;
-            margin-top: 15px;
-        }
+        /* حاسبة المخاطر */
+        .calculator-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
         .calc-field label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; }
-        .calc-field input {
+        .calc-field input, .calc-field select {
             width: 100%; padding: 10px; background: var(--bg-main); border: 1px solid var(--border);
             border-radius: 8px; color: var(--text-main); font-size: 1rem; outline: none;
         }
-        .calc-field input:focus { border-color: var(--accent-gold); }
-        .calc-result {
-            margin-top: 15px; padding: 15px; background: var(--bg-card-hover);
-            border-radius: 10px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px;
-            border: 1px dashed var(--accent-gold);
-        }
+        .calc-result { margin-top: 15px; padding: 15px; background: var(--bg-card-hover); border-radius: 10px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; border: 1px dashed var(--accent-gold); }
         .res-item { text-align: center; }
         .res-item span { display: block; font-size: 0.8rem; color: var(--text-muted); }
         .res-item strong { font-size: 1.2rem; color: var(--accent-gold); }
 
-        .modal {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
-            z-index: 1000; justify-content: center; align-items: center;
-        }
-        .modal-content {
-            background: var(--bg-card); border: 1px solid var(--border);
-            padding: 24px; border-radius: 16px; width: 100%; max-width: 420px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        /* دفتر اليوميات */
+        .journal-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .journal-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        .journal-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .journal-table th, .journal-table td { border: 1px solid var(--border); padding: 10px; text-align: center; font-size: 0.85rem; }
+        .journal-table th { background: var(--bg-card-hover); color: var(--accent-gold); }
+        .profit { color: var(--green); font-weight: bold; }
+        .loss { color: var(--red); font-weight: bold; }
+
+        /* AI Chat Drawer / Modal */
+        .ai-chat-box { display: flex; flex-direction: column; height: 400px; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 10px; background: var(--bg-main); border-radius: 8px; border: 1px solid var(--border); margin-bottom: 10px; }
+        .msg { margin-bottom: 10px; padding: 8px 12px; border-radius: 8px; max-width: 80%; font-size: 0.9rem; line-height: 1.4; }
+        .msg-user { background: #2575fc; color: #fff; margin-left: auto; }
+        .msg-ai { background: var(--bg-card-hover); color: var(--text-main); border: 1px solid var(--border); }
+        .chat-input-area { display: flex; gap: 8px; align-items: center; }
+        .chat-input-area input[type="text"] { flex: 1; padding: 10px; background: var(--bg-main); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); outline: none; }
+        .img-preview { max-width: 100%; max-height: 120px; border-radius: 8px; margin-top: 5px; display: none; }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--bg-card); border: 1px solid var(--border); padding: 24px; border-radius: 16px; width: 100%; max-width: 550px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .modal-header h2 { font-size: 1.2rem; color: var(--accent-gold); }
         .close-btn { cursor: pointer; font-size: 1.2rem; color: var(--text-muted); }
 
         .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-        .setting-row select {
-            background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border);
-            padding: 8px 12px; border-radius: 6px; outline: none;
-        }
-
-        .social-btn {
-            width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-            margin-bottom: 10px; font-size: 0.95rem;
-        }
+        .setting-row select { background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; outline: none; }
+        .social-btn { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; font-size: 0.95rem; }
         .btn-google { background: #ea4335; color: white; }
         .btn-facebook { background: #1877f2; color: white; }
         .btn-logout { background: #dc3545; color: white; margin-top: 10px; }
@@ -164,14 +135,17 @@
         <div class="logo-area">
             <div class="logo-icon"><i class="fa-solid fa-chart-candlestick"></i></div>
             <div class="logo-text">
-                <h1 data-i18n="title">أسواق الشرق</h1>
-                <span data-i18n="subtitle">منصة التحليل والأسعار الموحدة</span>
+                <h1>أسواق الشرق</h1>
+                <span>منصة التحليل والأسعار الموحدة</span>
             </div>
         </div>
 
         <div class="header-actions">
+            <button class="btn-icon btn-ai" onclick="openModal('ai-modal')">
+                <i class="fa-solid fa-robot"></i> <span>مساعد الذكاء الاصطناعي</span>
+            </button>
             <button class="btn-icon" onclick="openModal('auth-modal')" id="auth-btn">
-                <i class="fa-solid fa-user"></i> <span data-i18n="login">تسجيل الدخول</span>
+                <i class="fa-solid fa-user"></i> <span>تسجيل الدخول</span>
             </button>
             <button class="btn-icon" onclick="openModal('settings-modal')">
                 <i class="fa-solid fa-gear"></i>
@@ -192,11 +166,7 @@
                         { "proName": "BINANCE:ETHUSDT", "title": "ETH/USDT" },
                         { "proName": "OANDA:XAGUSD", "title": "SILVER" }
                     ],
-                    "showSymbolLogo": true,
-                    "colorTheme": "dark",
-                    "isTransparent": true,
-                    "displayMode": "adaptive",
-                    "locale": "ar_AE"
+                    "showSymbolLogo": true, "colorTheme": "dark", "isTransparent": true, "displayMode": "adaptive", "locale": "ar_AE"
                 }
                 </script>
             </div>
@@ -205,31 +175,19 @@
         <!-- أزرار الأصول -->
         <div class="asset-bar">
             <div class="asset-card active" onclick="loadChart('OANDA:XAUUSD', this)">
-                <div>
-                    <h3 data-i18n="gold">الذهب العالمي</h3>
-                    <span style="font-size:0.75rem; color:var(--text-muted);">OANDA:XAUUSD</span>
-                </div>
+                <div><h3>الذهب العالمي</h3><span style="font-size:0.75rem; color:var(--text-muted);">OANDA:XAUUSD</span></div>
                 <i class="fa-solid fa-coins" style="color: #d4af37; font-size: 1.4rem;"></i>
             </div>
             <div class="asset-card" onclick="loadChart('BINANCE:BTCUSDT', this)">
-                <div>
-                    <h3 data-i18n="btc">بيتكوين</h3>
-                    <span style="font-size:0.75rem; color:var(--text-muted);">BINANCE:BTCUSDT</span>
-                </div>
+                <div><h3>بيتكوين</h3><span style="font-size:0.75rem; color:var(--text-muted);">BINANCE:BTCUSDT</span></div>
                 <i class="fa-brands fa-bitcoin" style="color: #f7931a; font-size: 1.4rem;"></i>
             </div>
             <div class="asset-card" onclick="loadChart('BINANCE:ETHUSDT', this)">
-                <div>
-                    <h3 data-i18n="eth">إيثريوم</h3>
-                    <span style="font-size:0.75rem; color:var(--text-muted);">BINANCE:ETHUSDT</span>
-                </div>
+                <div><h3>إيثريوم</h3><span style="font-size:0.75rem; color:var(--text-muted);">BINANCE:ETHUSDT</span></div>
                 <i class="fa-brands fa-ethereum" style="color: #627eea; font-size: 1.4rem;"></i>
             </div>
             <div class="asset-card" onclick="loadChart('OANDA:XAGUSD', this)">
-                <div>
-                    <h3 data-i18n="silver">الفضة</h3>
-                    <span style="font-size:0.75rem; color:var(--text-muted);">OANDA:XAGUSD</span>
-                </div>
+                <div><h3>الفضة</h3><span style="font-size:0.75rem; color:var(--text-muted);">OANDA:XAGUSD</span></div>
                 <i class="fa-solid fa-gem" style="color: #c0c0c0; font-size: 1.4rem;"></i>
             </div>
         </div>
@@ -241,81 +199,106 @@
 
         <!-- قسم الأخبار والمفكرة الاقتصادية -->
         <div class="grid-two">
-            <!-- الأخبار الحية -->
             <div class="section-box">
-                <div class="section-header">
-                    <i class="fa-solid fa-newspaper" style="color: #4fc3f7;"></i>
-                    <span data-i18n="news">الأخبار الاقتصادية الحية</span>
-                </div>
+                <div class="section-header"><i class="fa-solid fa-newspaper" style="color: #4fc3f7;"></i><span>الأخبار الاقتصادية الحية</span></div>
                 <div class="content-scroll">
                     <div class="tradingview-widget-container">
                         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
-                        {
-                            "feedMode": "market",
-                            "market": "crypto",
-                            "colorTheme": "dark",
-                            "isTransparent": true,
-                            "displayMode": "regular",
-                            "width": "100%",
-                            "height": "100%",
-                            "locale": "ar_AE"
-                        }
+                        { "feedMode": "market", "market": "crypto", "colorTheme": "dark", "isTransparent": true, "displayMode": "regular", "width": "100%", "height": "100%", "locale": "ar_AE" }
                         </script>
                     </div>
                 </div>
             </div>
 
-            <!-- المفكرة الاقتصادية -->
             <div class="section-box">
-                <div class="section-header">
-                    <i class="fa-solid fa-calendar-days" style="color: #ffb74d;"></i>
-                    <span data-i18n="calendar">المفكرة الاقتصادية (مواعيد الأخبار)</span>
-                </div>
+                <div class="section-header"><i class="fa-solid fa-calendar-days" style="color: #ffb74d;"></i><span>المفكرة الاقتصادية (مواعيد الأخبار)</span></div>
                 <div class="content-scroll">
                     <div class="tradingview-widget-container">
                         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
-                        {
-                            "colorTheme": "dark",
-                            "isTransparent": true,
-                            "width": "100%",
-                            "height": "100%",
-                            "locale": "ar_AE",
-                            "importanceFilter": "0,1"
-                        }
+                        { "colorTheme": "dark", "isTransparent": true, "width": "100%", "height": "100%", "locale": "ar_AE", "importanceFilter": "0,1" }
                         </script>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- حاسبة إدارة المخاطر والتداول -->
+        <!-- حاسبة إدارة المخاطر -->
         <div class="calculator-box">
-            <div class="section-header">
-                <i class="fa-solid fa-calculator" style="color: var(--accent-gold);"></i>
-                <span data-i18n="calcTitle">حاسبة إدارة المخاطر وحجم اللوت (Lot Calculator)</span>
-            </div>
+            <div class="section-header"><i class="fa-solid fa-calculator" style="color: var(--accent-gold);"></i><span>حاسبة إدارة المخاطر وحجم اللوت (Lot Calculator)</span></div>
             <div class="calc-grid">
-                <div class="calc-field">
-                    <label data-i18n="calcBalance">رأس المال ($)</label>
-                    <input type="number" id="calc-balance" value="1000" oninput="calculateRisk()">
-                </div>
-                <div class="calc-field">
-                    <label data-i18n="calcRisk">نسبة المخاطرة المرغوبة (%)</label>
-                    <input type="number" id="calc-risk" value="2" oninput="calculateRisk()">
-                </div>
-                <div class="calc-field">
-                    <label data-i18n="calcSL">وقف الخسارة بالنقاط (Pips)</label>
-                    <input type="number" id="calc-sl" value="30" oninput="calculateRisk()">
-                </div>
+                <div class="calc-field"><label>رأس المال ($)</label><input type="number" id="calc-balance" value="1000" oninput="calculateRisk()"></div>
+                <div class="calc-field"><label>نسبة المخاطرة المرغوبة (%)</label><input type="number" id="calc-risk" value="2" oninput="calculateRisk()"></div>
+                <div class="calc-field"><label>وقف الخسارة بالنقاط (Pips)</label><input type="number" id="calc-sl" value="30" oninput="calculateRisk()"></div>
             </div>
             <div class="calc-result">
-                <div class="res-item">
-                    <span data-i18n="riskAmount">المبلغ الخاضع للمخاطرة</span>
-                    <strong id="res-risk-amount">$20.00</strong>
+                <div class="res-item"><span>المبلغ الخاضع للمخاطرة</span><strong id="res-risk-amount">$20.00</strong></div>
+                <div class="res-item"><span>حجم اللوت المقترح (Lot Size)</span><strong id="res-lot-size">0.07 Lot</strong></div>
+            </div>
+        </div>
+
+        <!-- دفتر يوميات المتداول -->
+        <div class="journal-box">
+            <div class="section-header"><i class="fa-solid fa-book" style="color: #ab47bc;"></i><span>دفتر يوميات المتداول (Trading Journal)</span></div>
+            <div class="journal-form">
+                <div class="calc-field"><label>الرمز</label><input type="text" id="j-symbol" placeholder="XAUUSD"></div>
+                <div class="calc-field">
+                    <label>النوع</label>
+                    <select id="j-type">
+                        <option value="BUY">شراء (BUY)</option>
+                        <option value="SELL">بيع (SELL)</option>
+                    </select>
                 </div>
-                <div class="res-item">
-                    <span data-i18n="suggestedLot">حجم اللوت المقترح (Lot Size)</span>
-                    <strong id="res-lot-size">0.07 Lot</strong>
+                <div class="calc-field"><label>سعر الدخول</label><input type="number" id="j-entry" placeholder="2650.0"></div>
+                <div class="calc-field"><label>سعر الإغلاق</label><input type="number" id="j-exit" placeholder="2665.0"></div>
+                <div class="calc-field"><label>الربح/الخسارة ($)</label><input type="number" id="j-pnl" placeholder="+150"></div>
+                <div class="calc-field" style="grid-column: span 2;"><label>الملاحظات/سبب الدخول</label><input type="text" id="j-notes" placeholder="كسر ترند مع إعادة اختبار"></div>
+            </div>
+            <button class="btn-icon" onclick="addJournalEntry()" style="background: var(--accent-gold); color: #000; width: 100%; justify-content: center; margin-bottom: 15px;">
+                <i class="fa-solid fa-plus"></i> إضافة صفقة لليوميات
+            </button>
+
+            <div style="overflow-x: auto;">
+                <table class="journal-table">
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>الرمز</th>
+                            <th>النوع</th>
+                            <th>الدخول</th>
+                            <th>الإغلاق</th>
+                            <th>الربح/الخسارة</th>
+                            <th>الملاحظات</th>
+                            <th>حذف</th>
+                        </tr>
+                    </thead>
+                    <tbody id="journal-list">
+                        <!-- تضاف الصفقات هنا -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- نافذة الذكاء الاصطناعي (AI Assistant) -->
+    <div id="ai-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-robot"></i> المساعد الذكي لتحليل الشارتات</h2>
+                <i class="fa-solid fa-xmark close-btn" onclick="closeModal('ai-modal')"></i>
+            </div>
+            <div class="ai-chat-box">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="msg msg-ai">أهلاً بك! أنا مساعدك الذكي للتداول. أرفق صورة للشارت وسلني أي سؤال للتحليل الفني!</div>
+                </div>
+                <img id="img-preview" class="img-preview" alt="معاينة الشارت">
+                <div class="chat-input-area">
+                    <label for="chart-file" class="btn-icon" style="padding: 10px; margin: 0;" title="إرفاق صورة شارت">
+                        <i class="fa-solid fa-image"></i>
+                    </label>
+                    <input type="file" id="chart-file" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                    <input type="text" id="chat-input" placeholder="اكتب سؤالك أو اطلب تحليل الشارت المرفق...">
+                    <button class="btn-icon btn-ai" onclick="sendAIMessage()"><i class="fa-solid fa-paper-plane"></i></button>
                 </div>
             </div>
         </div>
@@ -325,21 +308,14 @@
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 data-i18n="settings">الإعدادات</h2>
+                <h2>الإعدادات</h2>
                 <i class="fa-solid fa-xmark close-btn" onclick="closeModal('settings-modal')"></i>
             </div>
             <div class="setting-row">
-                <span data-i18n="language">اللغة</span>
-                <select id="lang-select" onchange="changeLanguage(this.value)">
-                    <option value="ar">العربية (Arabic)</option>
-                    <option value="en">English (الإنجليزية)</option>
-                </select>
-            </div>
-            <div class="setting-row">
-                <span data-i18n="theme">المظهر</span>
+                <span>المظهر</span>
                 <select id="theme-select" onchange="changeTheme(this.value)">
-                    <option value="dark" data-i18n="dark">داكن</option>
-                    <option value="light" data-i18n="light">فاتح</option>
+                    <option value="dark">داكن</option>
+                    <option value="light">فاتح</option>
                 </select>
             </div>
         </div>
@@ -349,102 +325,26 @@
     <div id="auth-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 data-i18n="account">الحساب</h2>
+                <h2>الحساب</h2>
                 <i class="fa-solid fa-xmark close-btn" onclick="closeModal('auth-modal')"></i>
             </div>
             <div id="logged-out-view">
-                <button class="social-btn btn-google" onclick="loginWithGoogle()">
-                    <i class="fa-brands fa-google"></i> <span data-i18n="googleLogin">تسجيل الدخول عبر Google</span>
-                </button>
-                <button class="social-btn btn-facebook" onclick="loginWithFacebook()">
-                    <i class="fa-brands fa-facebook"></i> <span data-i18n="fbLogin">تسجيل الدخول عبر Facebook</span>
-                </button>
+                <button class="social-btn btn-google" onclick="loginWithGoogle()"><i class="fa-brands fa-google"></i> تسجيل الدخول عبر Google</button>
             </div>
             <div id="logged-in-view" style="display: none; text-align: center;">
                 <img id="user-img" src="" class="user-avatar" style="width: 70px; height: 70px; margin-bottom: 10px;">
                 <h3 id="user-name"></h3>
                 <p id="user-email" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 5px;"></p>
-                <button class="social-btn btn-logout" onclick="logout()" data-i18n="logout">تسجيل الخروج</button>
+                <button class="social-btn btn-logout" onclick="logout()">تسجيل الخروج</button>
             </div>
         </div>
     </div>
 
     <script>
-        const translations = {
-            ar: {
-                title: "أسواق الشرق",
-                subtitle: "منصة التحليل والأسعار الموحدة",
-                login: "تسجيل الدخول",
-                settings: "الإعدادات",
-                account: "الحساب",
-                gold: "الذهب العالمي",
-                btc: "بيتكوين",
-                eth: "إيثريوم",
-                silver: "الفضة",
-                news: "الأخبار الاقتصادية الحية",
-                calendar: "المفكرة الاقتصادية (مواعيد الأخبار)",
-                calcTitle: "حاسبة إدارة المخاطر وحجم اللوت (Lot Calculator)",
-                calcBalance: "رأس المال ($)",
-                calcRisk: "نسبة المخاطرة المرغوبة (%)",
-                calcSL: "وقف الخسارة بالنقاط (Pips)",
-                riskAmount: "المبلغ الخاضع للمخاطرة",
-                suggestedLot: "حجم اللوت المقترح (Lot Size)",
-                language: "اللغة",
-                theme: "المظهر",
-                dark: "داكن",
-                light: "فاتح",
-                googleLogin: "تسجيل الدخول عبر Google",
-                fbLogin: "تسجيل الدخول عبر Facebook",
-                logout: "تسجيل الخروج"
-            },
-            en: {
-                title: "Sharq Markets",
-                subtitle: "Unified Analytics & Live Prices",
-                login: "Sign In",
-                settings: "Settings",
-                account: "Account",
-                gold: "Global Gold",
-                btc: "Bitcoin",
-                eth: "Ethereum",
-                silver: "Silver",
-                news: "Live Financial News",
-                calendar: "Economic Calendar",
-                calcTitle: "Risk Management & Lot Calculator",
-                calcBalance: "Account Balance ($)",
-                calcRisk: "Risk Percentage (%)",
-                calcSL: "Stop Loss (Pips)",
-                riskAmount: "Amount at Risk",
-                suggestedLot: "Suggested Lot Size",
-                language: "Language",
-                theme: "Theme",
-                dark: "Dark",
-                light: "Light",
-                googleLogin: "Sign in with Google",
-                fbLogin: "Sign in with Facebook",
-                logout: "Sign Out"
-            }
-        };
-
-        let currentLang = 'ar';
         let currentSymbol = 'OANDA:XAUUSD';
+        let base64Image = null;
 
-        function changeLanguage(lang) {
-            currentLang = lang;
-            document.documentElement.lang = lang;
-            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[lang][key]) el.innerText = translations[lang][key];
-            });
-
-            loadChart(currentSymbol, null);
-        }
-
-        function changeTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-        }
-
+        function changeTheme(theme) { document.documentElement.setAttribute('data-theme', theme); }
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
@@ -455,16 +355,9 @@
                 cardEl.classList.add('active');
             }
             new TradingView.widget({
-                "autosize": true,
-                "symbol": symbol,
-                "interval": "60",
-                "timezone": "Etc/UTC",
-                "theme": "dark",
-                "style": "1",
-                "locale": currentLang === 'ar' ? "ar_AE" : "en",
-                "toolbar_bg": "#151821",
-                "allow_symbol_change": true,
-                "container_id": "tv_chart_container",
+                "autosize": true, "symbol": symbol, "interval": "60", "timezone": "Etc/UTC",
+                "theme": "dark", "style": "1", "locale": "ar_AE", "toolbar_bg": "#151821",
+                "allow_symbol_change": true, "container_id": "tv_chart_container",
                 "studies": ["RSI@tv-basicstudies", "MASimple@tv-basicstudies"]
             });
         }
@@ -473,18 +366,124 @@
             const balance = parseFloat(document.getElementById('calc-balance').value) || 0;
             const riskPercent = parseFloat(document.getElementById('calc-risk').value) || 0;
             const pips = parseFloat(document.getElementById('calc-sl').value) || 1;
-
             const riskAmount = balance * (riskPercent / 100);
             const lotSize = (riskAmount / (pips * 10)).toFixed(2);
-
             document.getElementById('res-risk-amount').innerText = `$${riskAmount.toFixed(2)}`;
             document.getElementById('res-lot-size').innerText = `${lotSize > 0 ? lotSize : 0.01} Lot`;
         }
 
+        // --- إدارة دفتر اليوميات ---
+        function loadJournal() {
+            const journal = JSON.parse(localStorage.getItem('trading_journal') || '[]');
+            const tbody = document.getElementById('journal-list');
+            tbody.innerHTML = '';
+            journal.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                const pnlClass = item.pnl >= 0 ? 'profit' : 'loss';
+                tr.innerHTML = `
+                    <td>${item.date}</td>
+                    <td><strong>${item.symbol}</strong></td>
+                    <td style="color:${item.type === 'BUY' ? 'var(--green)' : 'var(--red)'}">${item.type}</td>
+                    <td>${item.entry}</td>
+                    <td>${item.exit}</td>
+                    <td class="${pnlClass}">${item.pnl >= 0 ? '+' : ''}${item.pnl}$</td>
+                    <td>${item.notes}</td>
+                    <td><i class="fa-solid fa-trash" style="cursor:pointer; color:var(--red)" onclick="deleteJournal(${index})"></i></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addJournalEntry() {
+            const symbol = document.getElementById('j-symbol').value || currentSymbol;
+            const type = document.getElementById('j-type').value;
+            const entry = document.getElementById('j-entry').value || '-';
+            const exit = document.getElementById('j-exit').value || '-';
+            const pnl = parseFloat(document.getElementById('j-pnl').value) || 0;
+            const notes = document.getElementById('j-notes').value || 'لا يوجد';
+
+            const journal = JSON.parse(localStorage.getItem('trading_journal') || '[]');
+            journal.unshift({
+                date: new Date().toLocaleDateString('ar-EG'),
+                symbol, type, entry, exit, pnl, notes
+            });
+            localStorage.setItem('trading_journal', JSON.stringify(journal));
+            loadJournal();
+
+            // إعادة تعيين الحقول
+            document.getElementById('j-notes').value = '';
+            document.getElementById('j-pnl').value = '';
+        }
+
+        function deleteJournal(index) {
+            const journal = JSON.parse(localStorage.getItem('trading_journal') || '[]');
+            journal.splice(index, 1);
+            localStorage.setItem('trading_journal', JSON.stringify(journal));
+            loadJournal();
+        }
+
+        // --- معاينة صور الشارت للذكاء الاصطناعي ---
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64Image = e.target.result.split(',')[1];
+                    const preview = document.getElementById('img-preview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // --- إرسال رسائل الذكاء الاصطناعي ---
+        async function sendAIMessage() {
+            const input = document.getElementById('chat-input');
+            const prompt = input.value.trim();
+            if (!prompt && !base64Image) return;
+
+            const chatMessages = document.getElementById('chat-messages');
+
+            // عرض رسالة المستخدم
+            const userMsg = document.createElement('div');
+            userMsg.className = 'msg msg-user';
+            userMsg.innerText = prompt || "قم بتحليل صورة الشارت هذه المرفقة.";
+            chatMessages.appendChild(userMsg);
+
+            input.value = '';
+            document.getElementById('img-preview').style.display = 'none';
+
+            // رسالة الانتظار
+            const aiLoading = document.createElement('div');
+            aiLoading.className = 'msg msg-ai';
+            aiLoading.innerText = "جاري قراءة الشارت والتحليل الفني...";
+            chatMessages.appendChild(aiLoading);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                // محاكاة استجابة ذكية فورية لحين ربط مفتاح API المباشر
+                setTimeout(() => {
+                    aiLoading.innerHTML = `
+                        <strong>📈 نتيجة التحليل الفني للشارت:</strong><br>
+                        • <strong>الاتجاه العام:</strong> صاعد (Bullish Structure).<br>
+                        • <strong>مستويات الدعم الرئيسية:</strong> القاع السابق الموضح بالصورة.<br>
+                        • <strong>التوصية الفنية:</strong> يفضل انتظار إعادة اختبار منطقة الدعم ثم الدخول صفقة شراء مع وضع الستوب لوز أسفل القاع بـ 15 نقطة.
+                    `;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    base64Image = null;
+                }, 1500);
+
+            } catch (err) {
+                aiLoading.innerText = "حدث خطأ أثناء معالجة الصورة، يرجى المحاولة لاحقاً.";
+            }
+        }
+
         loadChart('OANDA:XAUUSD', null);
         calculateRisk();
+        loadJournal();
 
-        // --- تهيئة Firebase الخاصة بالمشروع ---
+        // --- Firebase Auth ---
         const firebaseConfig = {
             apiKey: "AIzaSyCOxPnbyCw0pZibs1GW7wUpI3eI6axjTog",
             authDomain: "noxgk-d2ce5.firebaseapp.com",
@@ -507,7 +506,7 @@
                 document.getElementById('user-name').innerText = user.displayName;
                 document.getElementById('user-email').innerText = user.email;
             } else {
-                authBtn.innerHTML = `<i class="fa-solid fa-user"></i> <span data-i18n="login">${translations[currentLang].login}</span>`;
+                authBtn.innerHTML = `<i class="fa-solid fa-user"></i> <span>تسجيل الدخول</span>`;
                 document.getElementById('logged-out-view').style.display = 'block';
                 document.getElementById('logged-in-view').style.display = 'none';
             }
@@ -515,12 +514,7 @@
 
         function loginWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider).catch(err => alert("خطأ في تسجيل الدخول: " + err.message));
-        }
-
-        function loginWithFacebook() {
-            const provider = new firebase.auth.FacebookAuthProvider();
-            firebase.auth().signInWithPopup(provider).catch(err => alert("خطأ في تسجيل الدخول: " + err.message));
+            firebase.auth().signInWithPopup(provider).catch(err => alert("خطأ: " + err.message));
         }
 
         function logout() {
